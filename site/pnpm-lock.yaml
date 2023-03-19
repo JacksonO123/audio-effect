@@ -1,14 +1,14 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@jacksonotto/lampjs': ^2.3.0
+  '@jacksonotto/lampjs': ^2.4.0
   '@vercel/node': ^2.9.13
   simulationjs: ^3.2.1
   typescript: ^4.9.3
   vite: ^4.1.0
 
 dependencies:
-  '@jacksonotto/lampjs': 2.3.0
+  '@jacksonotto/lampjs': 2.4.0
   simulationjs: 3.2.1
 
 devDependencies:
@@ -237,8 +237,8 @@ packages:
     dev: true
     optional: true
 
-  /@jacksonotto/lampjs/2.3.0:
-    resolution: {integrity: sha512-SP05L6qk45McoDDXnAc7iXvVDatcJuaMhI4dZ/CRE5N3JxtEuU+9sK6uYrj4ifr/1aCZsJIGs4wO92iCgJGQ3w==}
+  /@jacksonotto/lampjs/2.4.0:
+    resolution: {integrity: sha512-xilLTihZrqRyUTOnTQ3yU4Crf6soHc06zdYdbq/Ho/rVLSxerwGPDH9ShoBekEZNuv6vH0DWZx/ujo8mKIOJ6A==}
     dependencies:
       uuid: 9.0.0
     dev: false

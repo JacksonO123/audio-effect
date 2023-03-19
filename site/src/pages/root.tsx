@@ -1,7 +1,7 @@
-import { createAsyncCall, onPageMount } from "@jacksonotto/lampjs";
-import { Simulation, Vector3, Color, Cube } from "simulationjs";
-import { baseServerUrl } from "../utils/server";
-import "./root.css";
+import { createAsyncCall, createState, onPageMount } from '@jacksonotto/lampjs';
+import { Simulation, Vector3, Color, Cube } from 'simulationjs';
+import { baseServerUrl } from '../utils/server';
+import './root.css';
 
 const Root = () => {
   const maxSize = 50;
@@ -11,9 +11,8 @@ const Root = () => {
   let audioData: ResType | null = null;
   let fps = 0;
   let inc = 0;
-  let sampleToAverage = 0;
-  const waveSmoothScale = 7;
-  const filename = "test-audio.mp3";
+  let sampleToAverage = 16;
+  const waveSmoothScale = 2;
   let canPlay = true;
 
   type ResType = {
@@ -23,33 +22,69 @@ const Root = () => {
     length: number;
     max: number;
   };
-  const getAudioData = createAsyncCall<ResType>(
-    baseServerUrl + "get-audio-data",
-    {
-      method: "POST",
+
+  const handleChooseAudio = (audioName: string) => {
+    const getAudioData = createAsyncCall<ResType>(baseServerUrl + 'get-audio-data', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        filename,
-      }),
+        filename: audioName
+      })
+    });
+    const audio = new Audio(baseServerUrl + 'get-audio-file/' + audioName);
+    getAudioData((data) => {
+      overview((prev) => {
+        prev.loading = true;
+        return prev;
+      });
+      setTimeout(async () => {
+        if (data.data !== null && !data.loading) {
+          overview((prev) => {
+            prev.showing = false;
+            return prev;
+          });
+          audioData = data.data;
+          fps = Math.ceil(await sampleFrameRate(60)) + 1;
+          inc = audioData.sampleRate / fps;
+          sampleToAverage = inc * waveSmoothScale;
+          window.addEventListener('keypress', (e: KeyboardEvent) => {
+            if (e.key === 'Enter' && canPlay) {
+              canPlay = false;
+              audio.play();
+              animateCircle();
+            }
+          });
+        }
+      }, 500);
+    });
+  };
+
+  const overview = createState(
+    {
+      showing: true,
+      loading: false,
+      filenameOptions: ['sound-effect.mp3', 'fetty-wap.mp3', 'carti.mp3']
+    },
+    (val) => {
+      return val.showing ? (
+        <div class="overview">
+          <section>
+            <h3 class="overview-title">Choose an audio</h3>
+            <div class="options">
+              {val.filenameOptions.map((option) => (
+                <button onClick={() => handleChooseAudio(option)}>{option}</button>
+              ))}
+            </div>
+            <span>{val.loading ? 'Loading...' : ''}</span>
+          </section>
+        </div>
+      ) : (
+        <div></div>
+      );
     }
   );
-  getAudioData(async (data) => {
-    if (data.data !== null && !data.loading) {
-      audioData = data.data;
-      fps = await sampleFrameRate();
-      inc = audioData.sampleRate / fps;
-      sampleToAverage = inc * waveSmoothScale;
-      window.addEventListener("keypress", (e: KeyboardEvent) => {
-        if (e.key === "Enter" && canPlay) {
-          canPlay = false;
-          audio.play();
-          animateCircle();
-        }
-      });
-    }
-  });
 
   const sampleFrameRate = (totalFrames = 30) => {
     return new Promise<number>((resolve) => {
@@ -80,8 +115,6 @@ const Root = () => {
       window.requestAnimationFrame(startSample);
     });
   };
-
-  const audio = new Audio(baseServerUrl + "get-audio-file/" + filename);
 
   let currentIndex = 0;
   const animateCircle = async () => {
@@ -120,7 +153,7 @@ const Root = () => {
   };
 
   onPageMount(() => {
-    canvas = new Simulation("canvas");
+    canvas = new Simulation('canvas');
     canvas.fitElement();
     canvas.setBgColor(new Color(0, 0, 0));
 
@@ -145,6 +178,7 @@ const Root = () => {
       <div class="info">
         Press <code>Enter</code> to start
       </div>
+      {overview().el()}
     </div>
   );
 };
