@@ -1,1 +1,3 @@
-export const baseServerUrl = "http://localhost:8080/";
+export const baseServerUrl = import.meta.env.DEV
+  ? "http://localhost:8080/"
+  : "";

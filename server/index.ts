@@ -5,7 +5,7 @@ import express from 'express';
 import cors from 'cors';
 const context = new AudioContext();
 const app = express();
-const port = 8080;
+const port = process.env.PORT || 8080;
 
 type ResType = {
   pcmData: number[];
@@ -15,8 +15,6 @@ type ResType = {
 };
 
 const decodeSoundFile = async (soundFileName: string) => {
-  console.log('Decoding', soundFileName);
-
   let pcmData: number[] = [];
   let sampleRate: number = 0;
   let duration: number = 0;
@@ -41,11 +39,7 @@ const decodeSoundFile = async (soundFileName: string) => {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(
-  cors({
-    origin: 'http://localhost:3000'
-  })
-);
+app.use(cors());
 
 app.post('/get-audio-data', async (req, res) => {
   type BodyType = {
@@ -74,9 +68,5 @@ app.get('*', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
+  console.log(`Server running on port ${port}`);
 });
-
-// decodeSoundFile('test-audio.mp3').then((data) => {
-//   data.pcmData.forEach((val) => console.log(val));
-// });

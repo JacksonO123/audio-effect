@@ -4,7 +4,7 @@ import { baseServerUrl } from "../utils/server";
 import "./root.css";
 
 const Root = () => {
-  const maxSize = 80;
+  const maxSize = 50;
   const minSize = 30;
   let canvas: Simulation | null = null;
   let cube: Cube | null = null;
@@ -97,9 +97,9 @@ const Root = () => {
         .reduce((prev, acc) => acc + prev, 0) / sampleToAverage;
     const ratio = Math.sqrt(pcmDataValue) / audioData.max;
 
-    let newSize = maxSize * ratio;
+    let newSize = maxSize * ratio + minSize;
 
-    newSize = Math.max(newSize, minSize);
+    // newSize = Math.max(newSize, minSize);
     cube.setHeight(newSize);
     cube.setWidth(newSize);
     cube.setDepth(newSize);
