@@ -1,0 +1,19 @@
+.root {
+  height: 100%;
+  width: 100%;
+}
+
+.info {
+  position: absolute;
+  z-index: 10;
+  left: 12px;
+  top: 12px;
+  color: white;
+}
+
+.info code {
+  background: rgba(187, 187, 187, 0.35);
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-family: monospace;
+}
