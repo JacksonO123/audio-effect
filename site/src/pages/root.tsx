@@ -44,7 +44,6 @@ const Root = () => {
       window.addEventListener("keypress", (e: KeyboardEvent) => {
         if (e.key === "Enter" && canPlay) {
           canPlay = false;
-          audio.load();
           audio.play();
           animateCircle();
         }
