@@ -12,7 +12,7 @@ const Root = () => {
   let fps = 0;
   let inc = 0;
   let sampleToAverage = 0;
-  const waveSmoothScale = 6;
+  const waveSmoothScale = 7;
   const filename = "test-audio.mp3";
   let canPlay = true;
 
@@ -35,15 +35,16 @@ const Root = () => {
       }),
     }
   );
-  window.addEventListener("keypress", (e: KeyboardEvent) => {
-    if (e.key === "Enter" && canPlay) {
-      canPlay = false;
-      getAudioData(async (data) => {
-        if (data.data !== null) {
-          audioData = data.data;
-          fps = await sampleFrameRate();
-          inc = audioData.sampleRate / fps;
-          sampleToAverage = inc * waveSmoothScale;
+  getAudioData(async (data) => {
+    if (data.data !== null && !data.loading) {
+      audioData = data.data;
+      fps = await sampleFrameRate();
+      inc = audioData.sampleRate / fps;
+      sampleToAverage = inc * waveSmoothScale;
+      window.addEventListener("keypress", (e: KeyboardEvent) => {
+        if (e.key === "Enter" && canPlay) {
+          canPlay = false;
+          audio.load();
           audio.play();
           animateCircle();
         }
@@ -85,7 +86,7 @@ const Root = () => {
 
   let currentIndex = 0;
   const animateCircle = async () => {
-    if (!cube || !audioData || !canvas) return;
+    if (!cube || !audioData || !canvas || canPlay) return;
 
     const pcmDataValue =
       audioData.pcmData
