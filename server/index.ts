@@ -63,6 +63,15 @@ app.get('/get-audio-file/:filename', (req, res) => {
   res.end(fs.readFileSync(`audio/${params.filename}`));
 });
 
+app.get('/get-filenames', (req, res) => {
+  const filenames = fs.readdirSync('audio');
+  const data = {
+    filenames
+  };
+  res.contentType('application/json');
+  res.end(JSON.stringify(data));
+});
+
 app.get('*', (req, res) => {
   res.end('404 amongus');
 });

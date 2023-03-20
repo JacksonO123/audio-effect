@@ -63,20 +63,11 @@ const Root = () => {
     });
   };
 
-  const prodFilenameOptions = ['sound-effect.mp3'];
-  const devFilenameOptions = [
-    'sound-effect.mp3',
-    'fetty-wap.mp3',
-    'carti.mp3',
-    'father-stretch.mp3',
-    'nevada.mp3'
-  ];
-
   const overview = createState(
     {
       showing: true,
       loading: false,
-      filenameOptions: import.meta.env.DEV ? devFilenameOptions : prodFilenameOptions
+      filenameOptions: [] as string[]
     },
     (val) => {
       return val.showing ? (
@@ -96,6 +87,24 @@ const Root = () => {
       );
     }
   );
+
+  if (import.meta.env.DEV) {
+    createAsyncCall<{ filenames: string[] }>(baseServerUrl + 'get-filenames')((data) => {
+      if (!data.loading && data.data) {
+        overview((prev) => {
+          if (data.data) {
+            prev.filenameOptions = data.data.filenames;
+          }
+          return prev;
+        });
+      }
+    });
+  } else {
+    overview((prev) => {
+      prev.filenameOptions = ['sound-effect.mp3'];
+      return prev;
+    });
+  }
 
   const sampleFrameRate = (totalFrames = 30) => {
     return new Promise<number>((resolve) => {
