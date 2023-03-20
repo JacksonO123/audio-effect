@@ -64,7 +64,7 @@ app.get('/get-audio-file/:filename', (req, res) => {
 });
 
 app.get('*', (req, res) => {
-  res.end('404 page not found');
+  res.end('404 amongus');
 });
 
 app.listen(port, () => {

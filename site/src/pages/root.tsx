@@ -1,5 +1,5 @@
 import { createAsyncCall, createState, onPageMount } from '@jacksonotto/lampjs';
-import { Simulation, Vector3, Color, Cube } from 'simulationjs';
+import { Simulation, Vector3, Color, Cube, randomColor, transitionValues } from 'simulationjs';
 import { baseServerUrl } from '../utils/server';
 import './root.css';
 
@@ -12,8 +12,10 @@ const Root = () => {
   let fps = 0;
   let inc = 0;
   let sampleToAverage = 16;
-  const waveSmoothScale = 2;
+  const waveSmoothScale = 3;
   let canPlay = true;
+  const startColor = randomColor();
+  const endColor = randomColor();
 
   type ResType = {
     pcmData: number[];
@@ -65,7 +67,7 @@ const Root = () => {
     {
       showing: true,
       loading: false,
-      filenameOptions: ['sound-effect.mp3', 'fetty-wap.mp3', 'carti.mp3']
+      filenameOptions: ['sound-effect.mp3', 'fetty-wap.mp3', 'carti.mp3', 'father-stretch.mp3', 'nevada.mp3']
     },
     (val) => {
       return val.showing ? (
@@ -132,10 +134,19 @@ const Root = () => {
 
     let newSize = maxSize * ratio + minSize;
 
-    // newSize = Math.max(newSize, minSize);
+    const rDiff = endColor.r - startColor.r;
+    const gDiff = endColor.g - startColor.g;
+    const bDiff = endColor.b - startColor.b;
+    const newColor = new Color(
+      startColor.r + rDiff * ratio,
+      startColor.g + gDiff * ratio,
+      startColor.b + bDiff * ratio
+    );
+
     cube.setHeight(newSize);
     cube.setWidth(newSize);
     cube.setDepth(newSize);
+    cube.fill(newColor);
 
     currentIndex += inc;
     if (currentIndex < audioData.length) {
@@ -152,6 +163,35 @@ const Root = () => {
     rotateCube();
   };
 
+  const transitionColors = async () => {
+    const newStartColor = randomColor();
+    const newStartRDiff = newStartColor.r - startColor.r;
+    const newStartGDiff = newStartColor.g - startColor.g;
+    const newStartBDiff = newStartColor.b - startColor.b;
+
+    const newEndColor = randomColor();
+    const newEndRDiff = newEndColor.r - endColor.r;
+    const newEndGDiff = newEndColor.g - endColor.g;
+    const newEndBDiff = newEndColor.b - endColor.b;
+
+    await transitionValues(
+      () => {},
+      (p) => {
+        startColor.r += newStartRDiff * p;
+        startColor.g += newStartGDiff * p;
+        startColor.b += newStartBDiff * p;
+
+        endColor.r += newEndRDiff * p;
+        endColor.g += newEndGDiff * p;
+        endColor.b += newEndBDiff * p;
+        return true;
+      },
+      () => {},
+      8
+    );
+    transitionColors();
+  };
+
   onPageMount(() => {
     canvas = new Simulation('canvas');
     canvas.fitElement();
@@ -162,7 +202,7 @@ const Root = () => {
       minSize,
       minSize,
       minSize,
-      new Color(79, 13, 153),
+      startColor,
       new Vector3(0, 0, 0),
       true,
       true
@@ -170,6 +210,7 @@ const Root = () => {
     canvas.add(cube);
 
     rotateCube();
+    transitionColors();
   });
 
   return (
