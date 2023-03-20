@@ -63,11 +63,20 @@ const Root = () => {
     });
   };
 
+  const prodFilenameOptions = ['sound-effect.mp3'];
+  const devFilenameOptions = [
+    'sound-effect.mp3',
+    'fetty-wap.mp3',
+    'carti.mp3',
+    'father-stretch.mp3',
+    'nevada.mp3'
+  ];
+
   const overview = createState(
     {
       showing: true,
       loading: false,
-      filenameOptions: ['sound-effect.mp3', 'fetty-wap.mp3', 'carti.mp3', 'father-stretch.mp3', 'nevada.mp3']
+      filenameOptions: import.meta.env.DEV ? devFilenameOptions : prodFilenameOptions
     },
     (val) => {
       return val.showing ? (
