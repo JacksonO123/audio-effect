@@ -28,7 +28,6 @@ const Root = () => {
   const handleChooseAudio = (audioName: string) => {
     const getAudioData = createAsyncCall<ResType>(baseServerUrl + 'get-audio-data', {
       method: 'POST',
-      mode: 'no-cors',
       headers: {
         'Content-Type': 'application/json'
       },
