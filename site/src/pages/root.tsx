@@ -136,6 +136,7 @@ const Root = () => {
     });
   };
 
+  const pre = true;
   let currentIndex = 0;
   const animateCircle = async () => {
     if (!cube || !audioData || !canvas || canPlay) return;
@@ -144,7 +145,7 @@ const Root = () => {
       audioData.pcmData
         .slice(
           Math.max(0, currentIndex - sampleToAverage),
-          Math.min(currentIndex + sampleToAverage, audioData.length)
+          Math.min(currentIndex + (pre ? 0 : sampleToAverage), audioData.length)
         )
         .map((v) => Math.abs(v))
         .reduce((prev, acc) => acc + prev, 0) / sampleToAverage;
