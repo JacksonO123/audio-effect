@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "start": "npx concurrently \"cd server && pnpm run dev\" \"cd site && pnpm run dev\""
+  },
+  "dependencies": {
+    "concurrently": "^7.6.0"
+  }
+}

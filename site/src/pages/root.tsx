@@ -11,7 +11,7 @@ const Root = () => {
   let audioData: ResType | null = null;
   let fps = 0;
   let inc = 0;
-  let sampleToAverage = 16;
+  let sampleToAverage = 20;
   const waveSmoothScale = 3;
   let canPlay = true;
   const startColor = randomColor();
