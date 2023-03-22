@@ -110,6 +110,12 @@ const Root = () => {
     });
   };
 
+  const preSmoothInputVal = createState(0);
+
+  const handleChangePreSmooth = (e: ChangeEvent<HTMLInputElement>) => {
+    preSmoothInputVal(+e.currentTarget.value);
+  };
+
   const overview = createState(
     {
       showing: true,
@@ -151,6 +157,17 @@ const Root = () => {
                 </div>
               </>
             )}
+            <hr />
+            <h4>Pre smooth amount</h4>
+            <input
+              type="range"
+              onChange={handleChangePreSmooth}
+              min="0"
+              max="3"
+              step="1"
+              style="width: 100%;"
+              value={preSmoothInputVal}
+            />
             <span>{val.loading ? 'Loading...' : ''}</span>
           </section>
         </div>
@@ -217,7 +234,10 @@ const Root = () => {
       audioData.pcmData
         .slice(
           Math.max(0, currentIndex - sampleToAverage),
-          Math.min(currentIndex + (pre ? sampleToAverage / 4 : sampleToAverage), audioData.length)
+          Math.min(
+            currentIndex + (pre ? sampleToAverage / (4 - preSmoothInputVal().value) : sampleToAverage),
+            audioData.length
+          )
         )
         .map((v) => Math.abs(v))
         .reduce((prev, acc) => acc + prev, 0) / sampleToAverage;
@@ -233,6 +253,14 @@ const Root = () => {
       startColor.g + gDiff * ratio,
       startColor.b + bDiff * ratio
     );
+
+    const shadow = document.getElementById('shadow');
+    const shadowSizeDampen = 20;
+    if (shadow) {
+      shadow.style.background = `radial-gradient(${newColor.toHex()} 0%, black ${
+        (Math.pow(newSize, 2) / shadowSizeDampen) * 2 + maxSize * 2
+      }px)`;
+    }
 
     cube.setHeight(newSize);
     cube.setWidth(newSize);
@@ -286,7 +314,7 @@ const Root = () => {
   onPageMount(() => {
     canvas = new Simulation('canvas');
     canvas.fitElement();
-    canvas.setBgColor(new Color(0, 0, 0));
+    canvas.setBgColor(new Color(0, 0, 0, 0));
 
     cube = new Cube(
       new Vector3(0, 0, 0),
@@ -306,6 +334,7 @@ const Root = () => {
 
   return (
     <div class="root">
+      <div id="shadow"></div>
       <canvas id="canvas" />
       <div class="info">
         Press <code>Enter</code> to start

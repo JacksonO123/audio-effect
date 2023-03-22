@@ -63,3 +63,17 @@ hr {
   margin-top: var(--gap);
   gap: var(--gap);
 }
+
+canvas {
+  position: relative;
+}
+
+#shadow {
+  position: absolute;
+  height: 100vh;
+  aspect-ratio: 1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(transparent 0%, transparent 0%);
+}
