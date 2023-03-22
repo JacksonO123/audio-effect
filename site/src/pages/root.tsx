@@ -217,7 +217,7 @@ const Root = () => {
       audioData.pcmData
         .slice(
           Math.max(0, currentIndex - sampleToAverage),
-          Math.min(currentIndex + (pre ? 0 : sampleToAverage), audioData.length)
+          Math.min(currentIndex + (pre ? sampleToAverage / 4 : sampleToAverage), audioData.length)
         )
         .map((v) => Math.abs(v))
         .reduce((prev, acc) => acc + prev, 0) / sampleToAverage;
