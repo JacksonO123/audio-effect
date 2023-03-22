@@ -1,4 +1,4 @@
-import { createAsyncCall, createState, onPageMount } from '@jacksonotto/lampjs';
+import { ChangeEvent, createAsyncCall, createState, onPageMount } from '@jacksonotto/lampjs';
 import { Simulation, Vector3, Color, Cube, randomColor, transitionValues } from 'simulationjs';
 import { baseServerUrl } from '../utils/server';
 import './root.css';
@@ -63,6 +63,53 @@ const Root = () => {
     });
   };
 
+  const newFileName = createState('new-file.mp3');
+  const newFileData = createState('');
+
+  const handleUploadFile = (e: ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const match = file.name.match(/\.?(\w+)$/);
+    if (match === null) {
+      console.error('Unable to find file extension.');
+      return;
+    }
+
+    const ext = match[1];
+    if (ext === 'mp3') {
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        const res = evt.target?.result;
+        if (typeof res === 'string') {
+          newFileData(res);
+        }
+      };
+      reader.readAsText(file);
+    } else {
+      console.error('Invalid file type. File must be a CSV.');
+    }
+  };
+
+  const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    newFileName(e.currentTarget.value);
+  };
+
+  const addNewSong = () => {
+    fetch(baseServerUrl + 'add-song', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name: newFileName().value,
+        data: newFileData().value
+      })
+    });
+  };
+
   const overview = createState(
     {
       showing: true,
@@ -79,6 +126,31 @@ const Root = () => {
                 <button onClick={() => handleChooseAudio(option)}>{option}</button>
               ))}
             </div>
+            {import.meta.env.DEV && (
+              <>
+                <hr />
+                <div class="options">
+                  <input
+                    type="file"
+                    multiple={false}
+                    onChange={handleUploadFile}
+                  >
+                    Upload Audio
+                  </input>
+                </div>
+                <div class="add-song-controls">
+                  <input
+                    placeholder="Name"
+                    onChange={handleNameChange}
+                    value={newFileName}
+                    style={{
+                      width: '100%'
+                    }}
+                  />
+                  <button onClick={addNewSong}>Add song</button>
+                </div>
+              </>
+            )}
             <span>{val.loading ? 'Loading...' : ''}</span>
           </section>
         </div>

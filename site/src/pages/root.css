@@ -49,3 +49,17 @@
   flex-direction: column;
   gap: 4px;
 }
+
+hr {
+  margin: 8px 0;
+}
+
+.add-song-controls {
+  --gap: 8px;
+  display: flex;
+  flex-direction: row;
+  white-space: nowrap;
+  word-break: keep-all;
+  margin-top: var(--gap);
+  gap: var(--gap);
+}

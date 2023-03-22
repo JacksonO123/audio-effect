@@ -37,7 +37,7 @@ const decodeSoundFile = async (soundFileName: string) => {
   });
 };
 
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 
@@ -70,6 +70,20 @@ app.get('/get-filenames', (req, res) => {
   };
   res.contentType('application/json');
   res.end(JSON.stringify(data));
+});
+
+app.post('/add-song', (req, res) => {
+  type ReqBodyType = {
+    name: string;
+    data: string;
+  };
+  const data = req.body as ReqBodyType;
+  const ext = data.name.split('.')[1];
+  if (!ext || ext !== 'mp3') {
+    res.end();
+  }
+  fs.writeFileSync(`audio/${data.name}`, data.data);
+  res.end();
 });
 
 app.get('*', (req, res) => {
