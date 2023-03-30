@@ -255,7 +255,7 @@ const Root = () => {
     );
 
     const shadow = document.getElementById('shadow');
-    const shadowSizeDampen = 20;
+    const shadowSizeDampen = 30;
     if (shadow) {
       shadow.style.background = `radial-gradient(${newColor.toHex()} 0%, black ${
         (Math.pow(newSize, 2) / shadowSizeDampen) * 2 + maxSize * 2
